@@ -16,6 +16,7 @@ const Grid = () => {
   const [numRows, setNumRows] = useState(10);
   const [numCols, setNumCols] = useState(10);
   const [random, setRandom] = useState(0.3);
+  const [delay, setDelay] = useState(500);
 
   const [colAndRowsOptions] = useState([
     { label: "6x6", value: 6 },
@@ -33,6 +34,14 @@ const Grid = () => {
     { label: "Low", value: 0.1 },
     { label: "Medium", value: 0.3 },
     { label: "Large", value: 0.5 },
+  ]);
+
+  const [speedOptions] = useState([
+    { label: "Very Slow", value: 2000 },
+    { label: "Slow", value: 1000 },
+    { label: "Normal", value: 500 },
+    { label: "Fast", value: 200 },
+    { label: "Very Fast", value: 10 },
   ]);
 
   // const generateGrid = () => {
@@ -64,6 +73,10 @@ const Grid = () => {
 
   const handleRandomChange = (newValue) => {
     setRandom(newValue);
+    setRunning(false);
+  };
+  const handleDelayChange = (newValue) => {
+    setDelay(newValue);
     setRunning(false);
   };
 
@@ -109,39 +122,60 @@ const Grid = () => {
       });
     });
 
-    setTimeout(runGame, 500);
-  }, [numRows, random]);
+    setTimeout(runGame, delay);
+  }, [numRows, random, delay]);
 
   return (
     <>
-      <select
-        onChange={(e) => handleRowsColsChange(e.target.value)}
-        value={(numRows, numCols)}
-      >
-        {colAndRowsOptions.map((item) => (
-          <option
-            selected={item.label === "10x10"}
-            key={item.value}
-            value={item.value}
-          >
-            {item.label}
-          </option>
-        ))}
-      </select>
-      <select
-        onChange={(e) => handleRandomChange(e.target.value)}
-        value={random}
-      >
-        {randomOptions.map((item) => (
-          <option
-            selected={item.label === "Medium"}
-            key={item.value}
-            value={item.value}
-          >
-            {item.label}
-          </option>
-        ))}
-      </select>
+      <div>
+        <span>Change rows and comlumns size:</span>
+        <select
+          onChange={(e) => handleRowsColsChange(e.target.value)}
+          value={(numRows, numCols)}
+        >
+          {colAndRowsOptions.map((item) => (
+            <option
+              selected={item.label === "10x10"}
+              key={item.value}
+              value={item.value}
+            >
+              {item.label}
+            </option>
+          ))}
+        </select>
+        <br />
+        <span>Change number of random cells:</span>
+        <select
+          onChange={(e) => handleRandomChange(e.target.value)}
+          value={random}
+        >
+          {randomOptions.map((item) => (
+            <option
+              selected={item.label === "Medium"}
+              key={item.value}
+              value={item.value}
+            >
+              {item.label}
+            </option>
+          ))}
+        </select>
+        <br />
+        <span>Change the speed of generations:</span>
+        <select
+          onChange={(e) => handleDelayChange(e.target.value)}
+          value={delay}
+        >
+          {speedOptions.map((item) => (
+            <option
+              selected={item.label === "Normal"}
+              key={item.value}
+              value={item.value}
+            >
+              {item.label}
+            </option>
+          ))}
+        </select>
+      </div>
       <button
         onClick={() => {
           setRunning(!running);
