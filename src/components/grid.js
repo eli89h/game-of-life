@@ -13,9 +13,9 @@ const cellOperationsConway = [
 ];
 
 const Grid = () => {
-  //const [colAndRows, setColAndRows] = useState(10);
   const [numRows, setNumRows] = useState(10);
   const [numCols, setNumCols] = useState(10);
+  const [random, setRandom] = useState(0.3);
 
   const [colAndRowsOptions] = useState([
     { label: "6x6", value: 6 },
@@ -29,38 +29,47 @@ const Grid = () => {
     { label: "100x100", value: 100 },
   ]);
 
-  const generateGrid = () => {
-    const rows = [];
-    for (let i = 0; i < numRows; i++) {
-      rows.push(Array.from(Array(numCols), () => 0));
-    }
+  const [randomOptions] = useState([
+    { label: "Low", value: 0.1 },
+    { label: "Medium", value: 0.3 },
+    { label: "Large", value: 0.5 },
+  ]);
 
-    return rows;
-  };
+  // const generateGrid = () => {
+  //   const rows = [];
+  //   for (let i = 0; i < numRows; i++) {
+  //     rows.push(Array.from(Array(numCols), () => 0));
+  //   }
+
+  //   return rows;
+  // };
 
   const randomGrid = () => {
     const myGrid = [];
     for (let i = 0; i < numRows; i++) {
       const row = [];
       for (let j = 0; j < numCols; j++) {
-        row.push(Math.random() < 0.3 ? 1 : 0);
+        row.push(Math.random() < random ? 1 : 0);
       }
       myGrid.push(row);
     }
     return myGrid;
   };
 
-  const handleChange = (newValue) => {
+  const handleRowsColsChange = (newValue) => {
     setNumRows(newValue);
     setNumCols(newValue);
     setRunning(false);
-    runningRef.current.reset();
+  };
+
+  const handleRandomChange = (newValue) => {
+    setRandom(newValue);
+    setRunning(false);
   };
 
   const [grid, setGrid] = useState(() => {
     return randomGrid();
   });
-
 
   useEffect(() => {
     setGrid(randomGrid());
@@ -101,12 +110,12 @@ const Grid = () => {
     });
 
     setTimeout(runGame, 500);
-  }, [numRows]);
+  }, [numRows, random]);
 
   return (
     <>
       <select
-        onChange={(e) => handleChange(e.target.value)}
+        onChange={(e) => handleRowsColsChange(e.target.value)}
         value={(numRows, numCols)}
       >
         {colAndRowsOptions.map((item) => (
@@ -114,7 +123,20 @@ const Grid = () => {
             selected={item.label === "10x10"}
             key={item.value}
             value={item.value}
-            // onChange={(e) => handleChange(item.value)}
+          >
+            {item.label}
+          </option>
+        ))}
+      </select>
+      <select
+        onChange={(e) => handleRandomChange(e.target.value)}
+        value={random}
+      >
+        {randomOptions.map((item) => (
+          <option
+            selected={item.label === "Medium"}
+            key={item.value}
+            value={item.value}
           >
             {item.label}
           </option>
@@ -124,12 +146,6 @@ const Grid = () => {
         onClick={() => {
           setRunning(!running);
           if (!running) {
-            // const rows = [];
-            // for (let i = 0; i < numRows; i++) {
-            //   rows.push(
-            //     Array.from(Array(numCols), () => (Math.random() < 0.3 ? 1 : 0))
-            //   );
-            // }
             setGrid(randomGrid());
             runningRef.current = true;
             runGame();
@@ -142,7 +158,6 @@ const Grid = () => {
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${numCols}, 40px)`,
-          // gridTemplateRows: `repeat(${numRows}, 40px)`,
         }}
       >
         {grid &&
@@ -151,7 +166,7 @@ const Grid = () => {
               rows &&
               rows.map((col, j) => (
                 <div
-                  // key={`${i}-${j}`}
+                  key={`${i}-${j}`}
                   onClick={() => {
                     let newGrid = produce(grid, (gridCopy) => {
                       gridCopy[i][j] = grid[i][j] ? 0 : 1;
