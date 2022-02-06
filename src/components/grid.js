@@ -89,9 +89,6 @@ const Grid = () => {
     return randomGrid();
   });
 
-  useEffect(() => {
-    setGrid(randomGrid());
-  }, [numRows]);
 
   const [running, setRunning] = useState(false);
 
