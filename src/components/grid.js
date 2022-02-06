@@ -17,6 +17,7 @@ const Grid = () => {
   const [numCols, setNumCols] = useState(10);
   const [random, setRandom] = useState(0.3);
   const [delay, setDelay] = useState(500);
+  const [gameMode, setGameMode] = useState("con");
 
   const [colAndRowsOptions] = useState([
     { label: "6x6", value: 6 },
@@ -44,14 +45,12 @@ const Grid = () => {
     { label: "Very Fast", value: 10 },
   ]);
 
-  // const generateGrid = () => {
-  //   const rows = [];
-  //   for (let i = 0; i < numRows; i++) {
-  //     rows.push(Array.from(Array(numCols), () => 0));
-  //   }
-
-  //   return rows;
-  // };
+  const [gameOptions] = useState([
+    { label: "Conway", value: "con" },
+    { label: "Hyperactive", value: "hyp" },
+    { label: "High Life", value: "hil" },
+    { label: "Spontaneuos", value: "spo" },
+  ]);
 
   const randomGrid = () => {
     const myGrid = [];
@@ -75,8 +74,14 @@ const Grid = () => {
     setRandom(newValue);
     setRunning(false);
   };
+
   const handleDelayChange = (newValue) => {
     setDelay(newValue);
+    setRunning(false);
+  };
+
+  const handleGameChange = (newValue) => {
+    setGameMode(newValue);
     setRunning(false);
   };
 
@@ -111,11 +116,36 @@ const Grid = () => {
                 neighborCells += g[newI][newJ];
               }
             });
-
-            if (neighborCells < 2 || neighborCells > 3) {
-              gridCopy[i][j] = 0;
-            } else if (g[i][j] === 0 && neighborCells === 3) {
-              gridCopy[i][j] = 1;
+            if (gameMode === "con") {
+              if (neighborCells < 2 || neighborCells > 3) {
+                gridCopy[i][j] = 0;
+              } else if (g[i][j] === 0 && neighborCells === 3) {
+                gridCopy[i][j] = 1;
+              }
+            } else if (gameMode === "hyp") {
+              if (neighborCells < 2 || neighborCells > 4) {
+                gridCopy[i][j] = 0;
+              } else if (g[i][j] === 0 && neighborCells > 2) {
+                gridCopy[i][j] = 1;
+              }
+            } else if (gameMode === "hil") {
+              if (neighborCells < 2 || neighborCells > 3) {
+                gridCopy[i][j] = 0;
+              } else if (
+                (g[i][j] === 0 && neighborCells === 3) ||
+                neighborCells === 6
+              ) {
+                gridCopy[i][j] = 1;
+              }
+            } else if (gameMode === "spo") {
+              if (neighborCells < 2 || neighborCells > 3) {
+                gridCopy[i][j] = 0;
+              } else if (
+                (g[i][j] === 0 && neighborCells === 3) ||
+                (g[i][j] === 0 || && Math.random() < 0.005)
+              ) {
+                gridCopy[i][j] = 1;
+              }
             }
           }
         }
@@ -123,7 +153,7 @@ const Grid = () => {
     });
 
     setTimeout(runGame, delay);
-  }, [numRows, random, delay]);
+  }, [numRows, random, delay, gameMode]);
 
   return (
     <>
@@ -175,6 +205,22 @@ const Grid = () => {
             </option>
           ))}
         </select>
+        <br />
+        <span>Change game mode:</span>
+        <select
+          onChange={(e) => handleGameChange(e.target.value)}
+          value={gameMode}
+        >
+          {gameOptions.map((item) => (
+            <option
+              selected={item.label === "Conway"}
+              key={item.value}
+              value={item.value}
+            >
+              {item.label}
+            </option>
+          ))}
+        </select>
       </div>
       <button
         onClick={() => {
@@ -191,7 +237,7 @@ const Grid = () => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${numCols}, 40px)`,
+          gridTemplateColumns: `repeat(${numCols}, 20px)`,
         }}
       >
         {grid &&
@@ -208,8 +254,8 @@ const Grid = () => {
                     setGrid(newGrid);
                   }}
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: 20,
+                    height: 20,
                     backgroundColor: grid[i][j] ? "green" : undefined,
                     border: "solid 1px black",
                   }}
