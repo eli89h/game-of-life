@@ -142,7 +142,7 @@ const Grid = () => {
                 gridCopy[i][j] = 0;
               } else if (
                 (g[i][j] === 0 && neighborCells === 3) ||
-                (g[i][j] === 0 || && Math.random() < 0.005)
+                (g[i][j] === 0 && Math.random() < 0.005)
               ) {
                 gridCopy[i][j] = 1;
               }
